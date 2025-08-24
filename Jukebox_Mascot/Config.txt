@@ -1,0 +1,2 @@
+﻿//RiceShower//Tachyon//Tokai
+START_CHAR=RiceShower
