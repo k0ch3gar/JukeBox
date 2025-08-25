@@ -1,2 +1,3 @@
 ﻿//RiceShower//Tachyon//Tokai
 START_CHAR=RiceShower
+ALLOW_RANDOM_MASCOT=false

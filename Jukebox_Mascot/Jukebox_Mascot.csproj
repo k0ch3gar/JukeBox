@@ -113,7 +113,16 @@
     <Content Include="icon2.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Tachyon\dance.png">
+    <Content Include="SpriteSheet\Characters\Oguri\dance.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Oguri\intro.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Oguri\config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Tachyon\dance.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="SpriteSheet\Jukebox\config.txt" />
@@ -126,28 +135,28 @@
     <Content Include="SpriteSheet\Jukebox\music_note.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Teio\config.txt">
+    <Content Include="SpriteSheet\Characters\Teio\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Tachyon\config.txt">
+    <Content Include="SpriteSheet\Characters\Tachyon\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\RiceShower\config.txt">
+    <Content Include="SpriteSheet\Characters\RiceShower\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\RiceShower\dance.png">
+    <Content Include="SpriteSheet\Characters\RiceShower\dance.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\RiceShower\intro.png">
+    <Content Include="SpriteSheet\Characters\RiceShower\intro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Teio\dance.png">
+    <Content Include="SpriteSheet\Characters\Teio\dance.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Teio\intro.png">
+    <Content Include="SpriteSheet\Characters\Teio\intro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Tachyon\intro.png">
+    <Content Include="SpriteSheet\Characters\Tachyon\intro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
