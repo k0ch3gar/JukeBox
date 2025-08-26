@@ -5,6 +5,10 @@ Perfect for having a little dancing gremlin to waste your time while procrastina
 # Installation | Function
 Download latest here:
 
+You can Insta-Change the character by clicking the Jukebox
+<img width="71" height="112" alt="image" src="https://github.com/user-attachments/assets/a2cb48df-de68-4ead-9ffb-4286da64a994" />
+
+
 Just run the Jukebox_Mascot exe.
 **For the Config file, just leave everything in default** <br />
 ```
