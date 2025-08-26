@@ -3,7 +3,7 @@ A desktop jukebox mascot app built with C# (WPF), Mostly related to Umamusume, b
 Perfect for having a little dancing gremlin to waste your time while procrastinating.
 
 # Installation | Windows Only
-Download latest here:
+Download latest here: [Download](https://github.com/KurtVelasco/JukeBox/releases/download/v1.0/JukeBox_V1.0.zip)
 
 You can Insta-Change the character by clicking the Jukebox
 <img width="71" height="112" alt="image" src="https://github.com/user-attachments/assets/a2cb48df-de68-4ead-9ffb-4286da64a994" />
