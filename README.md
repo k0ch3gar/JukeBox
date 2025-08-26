@@ -6,10 +6,15 @@ Perfect for having a little dancing gremlin to waste your time while procrastina
 Download latest here:
 
 Just run the Jukebox_Mascot exe.
+
 for the main Config file (In the main exe)
+
 START_CHAR=Tachyon          |The char to launch
+
 ALLOW_RANDOM_MASCOT=false   |Change character when switching to another music
+
 ALLOW_MUSIC_NOTES=true      |Show those png music notes
+
 SPRITE_SPEED=30             |How fast the sprites move 30 default
 
 
