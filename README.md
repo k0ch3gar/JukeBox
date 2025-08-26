@@ -2,7 +2,7 @@
 A desktop jukebox mascot app built with C# (WPF), Mostly related to Umamusume, but can be edited through the spritesheet.
 Perfect for having a little dancing gremlin to waste your time while procrastinating.
 
-# Installation | Function
+# Installation | Windows Only
 Download latest here:
 
 You can Insta-Change the character by clicking the Jukebox
