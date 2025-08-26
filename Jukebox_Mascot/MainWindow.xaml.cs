@@ -21,7 +21,6 @@ namespace Jukebox_Mascot
     {
         private NotifyIcon TRAY_ICON;
 
-        private bool PLAY_INTRO_ON_NEW_SONG = true;
         private const int DEFAULT_WIDTH = 300;
         private const int DEFAULT_HEIGHT = 300;
         private int FRAME_WIDTH_JUKEBOX = 300;
@@ -35,17 +34,15 @@ namespace Jukebox_Mascot
         private int INTRO_FRAME_COUNT = 52;
         private int DANCE_FRAME_COUNT = 187;
         private int JUKEBOX_FRAME_COUNT = 22;
-        private List<string> MASCOTS = new List<string>();
+
         private int CURRENT_MASCOT_INDEX = 0;
-
-        private int SPRITE_COLUMN = 5;
-
+        private int SPRITE_COLUMN = 5; // This is the main default on how I hand Sprite Columns
         private int CURRENT_JUKEBOXF_FRAME = 0;
         private int CURRENT_INTRO_FRAME = 0;
         private int CURRENT_DANCE_FRAME = 0;
         private int CURRENT_JUKEBOX_FRAME = 0;
         private int CURRENT_MUSIC_NOTE_FRAME = 0;
-
+        private int CURRENT_TRACK_INDEX = 0;
         private int FRAME_RATE = 31;
 
         private BitmapImage MUSIC_NOTE_SHEET;
@@ -58,24 +55,24 @@ namespace Jukebox_Mascot
         private DispatcherTimer MASTER_TIMER;
         private DispatcherTimer SCROLL_TIMER;
 
+        private bool PLAY_INTRO_ON_NEW_SONG = true;
         private bool IS_INTRO = true;
         private bool IS_INTRO_JUKEBOX = true;
         private bool FORWARD_ANIMATION = true;
         private bool ALLOW_RANDOM_MASCOT = true;
         private bool ALLOW_MUSIC_NOTES = true;
+        private bool IS_RANDOM = false;
 
         private double SCROLL_POS;
 
+        private List<string> MASCOTS = new List<string>();
+        private List<string> MUSIC_FILES = new List<string>();
 
         private MediaPlayer PLAYER;
-        private List<string> MUSIC_FILES = new List<string>();
-        private int CURRENT_TRACK_INDEX = 0;
-        private bool IS_RANDOM = false;
 
         private BitmapImage LoadSprite(string filefolder, string fileName, string rootFolder = "Characters")
         {
-            string path = System.IO.Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", rootFolder, filefolder, fileName);
+            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", rootFolder, filefolder, fileName);
 
             if (!File.Exists(path))
             {
@@ -90,7 +87,6 @@ namespace Jukebox_Mascot
             image.Freeze();
             return image;
         }
-
         private void LoadSpritesSheet()
         {
             JUKEBOX_SHEET = LoadSprite("Jukebox", "jukebox.png", rootFolder: "");
@@ -101,9 +97,7 @@ namespace Jukebox_Mascot
                 MUSIC_NOTE_SHEET = LoadSprite("Jukebox", "music_note.png", rootFolder: "");
             }
             JUKEBOX_FUNNY_SHEET = LoadSprite("Jukebox", "music_box_goofy.png", rootFolder: "");
-
         }
-
 
         private void LoadMascotList()
         {
@@ -114,9 +108,7 @@ namespace Jukebox_Mascot
                 FatalError("SpriteSheet/Characters folder is missing!");
             }
 
-            MASCOTS = Directory.GetDirectories(spriteDir)
-                               .Select(Path.GetFileName)
-                               .ToList();
+            MASCOTS = Directory.GetDirectories(spriteDir).Select(Path.GetFileName).ToList();
 
             if (MASCOTS.Count == 0)
             {
@@ -172,9 +164,7 @@ namespace Jukebox_Mascot
             {
                 if (IS_INTRO)
                 {
-                    CURRENT_INTRO_FRAME = PlayAnimation(
-                        INTRO_SHEET, CURRENT_INTRO_FRAME, INTRO_FRAME_COUNT,
-                        FRAME_WIDTH, FRAME_HEIGHT, SpriteImage);
+                    CURRENT_INTRO_FRAME = PlayAnimation(INTRO_SHEET, CURRENT_INTRO_FRAME, INTRO_FRAME_COUNT,FRAME_WIDTH, FRAME_HEIGHT, SpriteImage);
 
                     if (CURRENT_INTRO_FRAME == 0)
                     {
@@ -212,7 +202,9 @@ namespace Jukebox_Mascot
             string musicDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
 
             if (!Directory.Exists(musicDir))
+            {
                 Directory.CreateDirectory(musicDir);
+            }
 
             MUSIC_FILES = Directory.GetFiles(musicDir, "*.mp3").ToList();
 
@@ -292,8 +284,9 @@ namespace Jukebox_Mascot
             openTimer.Tick += (s, e) =>
             {
                 if (ScrollingBorder.Width == 0)
+                {
                     ScrollingBorder.Visibility = Visibility.Visible;
-
+                }
                 if (ScrollingBorder.Width < 250)
                 {
                     ScrollingBorder.Width += 10;
@@ -339,7 +332,9 @@ namespace Jukebox_Mascot
             CLOSE_TIMER.Tick += (s, e) =>
             {
                 if (ScrollingBorder.Width > 0)
+                {
                     ScrollingBorder.Width -= 10;
+                }
                 else
                 {
                     CLOSE_TIMER.Stop();
@@ -348,7 +343,6 @@ namespace Jukebox_Mascot
             };
             CLOSE_TIMER.Start();
         }
-
 
         private void ResetApp()
         {
@@ -465,8 +459,6 @@ namespace Jukebox_Mascot
             JukeBoxSprite.Source = null;
         }
 
-
-
         private void LoadMasterConfig()
         {
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.txt");
@@ -478,67 +470,94 @@ namespace Jukebox_Mascot
             foreach (var line in File.ReadAllLines(path))
             {
                 if (string.IsNullOrWhiteSpace(line) || !line.Contains("="))
+                {
                     continue;
+                }
 
                 var parts = line.Split('=');
                 if (parts.Length != 2)
+                {
                     continue;
+                }
 
                 string key = parts[0].Trim();
                 string value = parts[1].Trim();
 
                 switch (key.ToUpper())
                 {
-                    case "START_CHAR": START_CHAR = value; break;
+                    case "START_CHAR":
+                    {
+                        START_CHAR = value;
+                        break;
+                    }
                     case "ALLOW_RANDOM_MASCOT":
+                    {
                         if (bool.TryParse(value, out bool boolValue))
+                        {
                             ALLOW_RANDOM_MASCOT = boolValue;
+                        }
                         break;
+                    }
                     case "ALLOW_MUSIC_NOTES":
+                    {
                         if (bool.TryParse(value, out bool boolValue2))
+                        {
                             ALLOW_MUSIC_NOTES = boolValue2;
+                        }
                         break;
+                    }
                     case "SPRITE_SPEED":
-                        if(int.TryParse(value, out int intValue))
+                    {
+                        if (int.TryParse(value, out int intValue))
+                        {
                             FRAME_RATE = intValue;
+                        }
                         break;
+                    }
                 }
             }
         }
         private void LoadConfigChar()
         {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"SpriteSheet","Characters", START_CHAR, "config.txt");
+            string path = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "SpriteSheet", "Characters", START_CHAR, "config.txt");
+
             if (!File.Exists(path))
             {
-                FatalError("Cannot find character name from config/folder. Please check config file if filename matches"
-                    , "Missing Character File");
+                FatalError("Cannot find character name from config/folder. Please check config file if filename matches",
+                    "Missing Character File");
             }
 
             foreach (var line in File.ReadAllLines(path))
             {
                 if (string.IsNullOrWhiteSpace(line) || !line.Contains("="))
+                {
                     continue;
+                }
 
                 var parts = line.Split('=');
                 if (parts.Length != 2)
+                {
                     continue;
+                }
 
                 string key = parts[0].Trim();
                 string value = parts[1].Trim();
 
                 if (!int.TryParse(value, out int intValue))
+                {
                     continue;
+                }
 
                 switch (key.ToUpper())
                 {
                     case "FRAME_HEIGHT": FRAME_HEIGHT = intValue; break;
                     case "FRAME_RATE": FRAME_RATE = intValue; break;
                     case "INTRO_FRAME_COUNT": INTRO_FRAME_COUNT = intValue; break;
-                    case "DANCE_FRAME_COUNT": DANCE_FRAME_COUNT = intValue; break;    
+                    case "DANCE_FRAME_COUNT": DANCE_FRAME_COUNT = intValue; break;
                 }
             }
         }
-
-
     }
 }
