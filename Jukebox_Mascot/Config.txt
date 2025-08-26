@@ -1,5 +1,5 @@
 ﻿//RiceShower//Tachyon//Tokai//Oguri//Pasa
-START_CHAR=Pasa
+START_CHAR=Tachyon
 ALLOW_RANDOM_MASCOT=false
 ALLOW_MUSIC_NOTES=true
 SPRITE_SPEED=30

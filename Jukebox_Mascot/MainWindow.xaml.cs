@@ -419,13 +419,20 @@ namespace Jukebox_Mascot
 
             CURRENT_MASCOT_INDEX = (CURRENT_MASCOT_INDEX + 1) % MASCOTS.Count;
             START_CHAR = MASCOTS[CURRENT_MASCOT_INDEX];
+            
+            
+            INTRO_SHEET = null;
+            DANCE_SHEET = null;
+            SpriteImage.Source = null;
 
+            GC.Collect();
             LoadConfigChar();
             LoadSpritesSheet();
 
             IS_INTRO = true;
             CURRENT_INTRO_FRAME = 0;
             CURRENT_DANCE_FRAME = 0;
+
 
             SpriteLabel.Content = $"Mascot: {START_CHAR}";
         }     
@@ -435,6 +442,12 @@ namespace Jukebox_Mascot
             {
                 return;
             }
+
+            INTRO_SHEET = null;
+            DANCE_SHEET = null;
+            SpriteImage.Source = null;
+
+            GC.Collect(); // optional (forces cleanup now)
 
             var rand = new Random();
             string randomChar = MASCOTS[rand.Next(MASCOTS.Count)];
