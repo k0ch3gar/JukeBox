@@ -7,7 +7,7 @@ Download latest here:
 
 Just run the Jukebox_Mascot exe.
 
-For the Config file, just leave everything in default <br />
+**For the Config file, just leave everything in default** <br /> <br />
 START_CHAR = <Name of Character> switch which character appears on startup<br />
 ALLOW_RANDOM_MASCOT = <false/true> Change sprite for every music change<br />
 ALLOW_MUSIC_NOTES = <false/true> Show the floating music note<br />
