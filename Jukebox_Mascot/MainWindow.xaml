@@ -24,7 +24,7 @@
           VerticalAlignment="Top"
           Canvas.Top="20"  Margin="40,120,0,0"/>
         <Image Name="JukeBoxSpriteFunny"
-           Width="139" Height="167"
+           Width="139" Height="167"  MouseLeftButtonDown="JukeBoxSprite_Click"
            HorizontalAlignment="Left"
            VerticalAlignment="Top"
            Canvas.Top="20"  Margin="45,190,0,0"/>

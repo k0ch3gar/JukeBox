@@ -104,13 +104,19 @@
     <Content Include="Config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="icon.ico">
+    <Compile Include="Music\PUT_MP3_FILES_HERE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Music\Uma Musume Pretty Derby MV - Rice Shower%27s Character Song [ささやかな祈り].mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Compile>
     <Content Include="icon2.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Bakushin\dance.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Bakushin\intro.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Bakushin\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SpriteSheet\Characters\Oguri\dance.png">
@@ -120,6 +126,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SpriteSheet\Characters\Oguri\config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Pasa\intro.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Pasa\config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Characters\Pasa\dance.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SpriteSheet\Characters\Tachyon\dance.png">

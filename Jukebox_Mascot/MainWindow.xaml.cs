@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.IO;
+using System.Data.SqlTypes;
 
 namespace Jukebox_Mascot
 {
@@ -34,6 +35,8 @@ namespace Jukebox_Mascot
         private int INTRO_FRAME_COUNT = 52;
         private int DANCE_FRAME_COUNT = 187;
         private int JUKEBOX_FRAME_COUNT = 22;
+        private List<string> MASCOTS = new List<string>();
+        private int CURRENT_MASCOT_INDEX = 0;
 
         private int SPRITE_COLUMN = 5;
 
@@ -57,54 +60,26 @@ namespace Jukebox_Mascot
 
         private bool IS_INTRO = true;
         private bool IS_INTRO_JUKEBOX = true;
-        private bool forward = true;
+        private bool FORWARD_ANIMATION = true;
         private bool ALLOW_RANDOM_MASCOT = true;
+        private bool ALLOW_MUSIC_NOTES = true;
 
         private double SCROLL_POS;
 
-        private List<string> CHARACTER_FOLDERS = new List<string>();
 
         private MediaPlayer PLAYER;
         private List<string> MUSIC_FILES = new List<string>();
         private int CURRENT_TRACK_INDEX = 0;
         private bool IS_RANDOM = false;
 
-        private BitmapImage LoadSprite(string filefolder,string fileName)
+        private BitmapImage LoadSprite(string filefolder, string fileName, string rootFolder = "Characters")
         {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet","Characters",filefolder ,fileName);
+            string path = System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", rootFolder, filefolder, fileName);
 
             if (!File.Exists(path))
             {
-                System.Windows.MessageBox.Show(
-                  $"Missing sprite file / Wrong File name Format:\n{fileName}\n\nPath: {path}",
-                  "Sprite Load Error",
-                  MessageBoxButton.OK,
-                  MessageBoxImage.Error
-                );
-                System.Windows.Application.Current.Shutdown();
-            }
-
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri(path);
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.EndInit();
-            image.Freeze();
-            return image;
-        }
-        private BitmapImage LoadJukeSprite(string filefolder, string fileName)
-        {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", filefolder, fileName);
-
-            if (!File.Exists(path))
-            {
-                System.Windows.MessageBox.Show(
-                  $"Missing sprite file / Wrong File name Format:\n{fileName}\n\nPath: {path}",
-                  "Sprite Load Error",
-                  MessageBoxButton.OK,
-                  MessageBoxImage.Error
-                );
-                System.Windows.Application.Current.Shutdown();
+                FatalError("Cannot find the spritefile for selected character", "Missing Character File");
             }
 
             var image = new BitmapImage();
@@ -118,34 +93,45 @@ namespace Jukebox_Mascot
 
         private void LoadSpritesSheet()
         {
-            SpriteImage.Source = null;
-            JUKEBOX_SHEET = LoadJukeSprite("Jukebox","jukebox.png");
-            INTRO_SHEET = LoadSprite(START_CHAR,"intro.png");
-            DANCE_SHEET = LoadSprite(START_CHAR,"dance.png");
-            MUSIC_NOTE_SHEET = LoadJukeSprite("Jukebox","music_note.png");
-            JUKEBOX_FUNNY_SHEET = LoadJukeSprite("Jukebox","music_box_goofy.png");
+            JUKEBOX_SHEET = LoadSprite("Jukebox", "jukebox.png", rootFolder: "");
+            INTRO_SHEET = LoadSprite(START_CHAR, "intro.png");
+            DANCE_SHEET = LoadSprite(START_CHAR, "dance.png");
+            if (ALLOW_MUSIC_NOTES)
+            {
+                MUSIC_NOTE_SHEET = LoadSprite("Jukebox", "music_note.png", rootFolder: "");
+            }
+            JUKEBOX_FUNNY_SHEET = LoadSprite("Jukebox", "music_box_goofy.png", rootFolder: "");
+
         }
 
 
-        private void LoadCharacterFolders()
+        private void LoadMascotList()
         {
-            string spriteRoot = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", "Characters");
+            string spriteDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", "Characters");
 
-            if (!Directory.Exists(spriteRoot))
+            if (!Directory.Exists(spriteDir))
             {
-                System.Windows.MessageBox.Show("SpriteSheet folder is missing!","Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
-                System.Windows.Application.Current.Shutdown();
+                FatalError("SpriteSheet/Characters folder is missing!");
             }
 
-            CHARACTER_FOLDERS = Directory.GetDirectories(spriteRoot)
-                                         .Select(Path.GetFileName)
-                                         .ToList();
+            MASCOTS = Directory.GetDirectories(spriteDir)
+                               .Select(Path.GetFileName)
+                               .ToList();
+
+            if (MASCOTS.Count == 0)
+            {
+                FatalError("No mascots found in SpriteSheet/Characters!");
+            }
         }
 
-
+        //Mainly for the user, This will be updated or debugging purposes
+        //To many edge cases for the program to crash.
+        private void FatalError(string message, string title = "Error")
+        {
+            System.Windows.MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            TRAY_ICON?.Dispose();
+            System.Windows.Application.Current.Shutdown();
+        }
         private int PlayAnimation(BitmapImage sheet,int currentFrame,int frameCount,int frameWidth,int frameHeight,System.Windows.Controls.Image targetImage,bool reverse = false)
         {
             if (sheet == null)
@@ -165,15 +151,15 @@ namespace Jukebox_Mascot
             }
             else
             {
-                if (forward)
+                if (FORWARD_ANIMATION)
                 {
                     currentFrame++;
-                    if (currentFrame >= frameCount - 1) forward = false;
+                    if (currentFrame >= frameCount - 1) FORWARD_ANIMATION = false;
                 }
                 else
                 {
                     currentFrame--;
-                    if (currentFrame <= 0) forward = true;
+                    if (currentFrame <= 0) FORWARD_ANIMATION = true;
                 }
                 return currentFrame;
             }
@@ -181,7 +167,7 @@ namespace Jukebox_Mascot
 
         private void InitializeAnimations()
         {
-            MASTER_TIMER = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(FRAME_RATE) };
+            MASTER_TIMER = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(FRAME_RATE)};
             MASTER_TIMER.Tick += (s, e) =>
             {
                 if (IS_INTRO)
@@ -211,9 +197,11 @@ namespace Jukebox_Mascot
                     CURRENT_DANCE_FRAME = PlayAnimation(DANCE_SHEET, CURRENT_DANCE_FRAME, DANCE_FRAME_COUNT,
                         FRAME_WIDTH, FRAME_HEIGHT, SpriteImage);
                 }
-
-                CURRENT_MUSIC_NOTE_FRAME = PlayAnimation(MUSIC_NOTE_SHEET, CURRENT_MUSIC_NOTE_FRAME, MUSIC_NOTE_FRAME,
+                if (ALLOW_MUSIC_NOTES)
+                {
+                    CURRENT_MUSIC_NOTE_FRAME = PlayAnimation(MUSIC_NOTE_SHEET, CURRENT_MUSIC_NOTE_FRAME, MUSIC_NOTE_FRAME,
                     DEFAULT_WIDTH, DEFAULT_HEIGHT, MusicNote);
+                }
             };
             MASTER_TIMER.Start();
         }
@@ -230,8 +218,6 @@ namespace Jukebox_Mascot
 
             if (MUSIC_FILES.Count == 0)
             {
-                System.Windows.MessageBox.Show("No music files found in Music folder!", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -245,8 +231,10 @@ namespace Jukebox_Mascot
         private void LoadTrack(int index)
         {
             if (index < 0 || index >= MUSIC_FILES.Count)
+            {           
                 return;
-
+            }
+     
             string filePath = MUSIC_FILES[index];
             PLAYER.Open(new Uri(filePath));
 
@@ -264,7 +252,6 @@ namespace Jukebox_Mascot
                 IS_INTRO = true;
                 CURRENT_INTRO_FRAME = 0;
                 CURRENT_JUKEBOX_FRAME = 0;
-                JukeBoxSprite.Source = null; 
             }
         }
 
@@ -274,6 +261,10 @@ namespace Jukebox_Mascot
 
         private void NextTrack()
         {
+            if(MUSIC_FILES.Count <= 0)
+            {
+                return;
+            }
             if (IS_RANDOM)
             {
                 var rand = new Random();
@@ -313,7 +304,7 @@ namespace Jukebox_Mascot
                     string filePath = MUSIC_FILES[CURRENT_TRACK_INDEX];
                     string songName = System.IO.Path.GetFileNameWithoutExtension(filePath);
                     ScrollingText.Text = $"🎵 Now Playing: {songName} 🎵";
-                    ScrollingText.Visibility = Visibility.Visible;
+                    ScrollingText.Visibility = Visibility.Visible;                    
                     StartScrolling();
                 }
             };
@@ -413,26 +404,62 @@ namespace Jukebox_Mascot
         public MainWindow()
         {
             InitializeComponent();
+            this.ShowInTaskbar = false;
             LoadMasterConfig();
             LoadConfigChar();
-            this.ShowInTaskbar = false;
             SetupTrayIcon();
             LoadSpritesSheet();
-            LoadCharacterFolders(); 
+            LoadMascotList(); 
             InitializeAnimations();
             InitializeMusic();
         }
+        private void JukeBoxSprite_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (MASCOTS.Count == 0) return;
+
+            CURRENT_MASCOT_INDEX = (CURRENT_MASCOT_INDEX + 1) % MASCOTS.Count;
+            START_CHAR = MASCOTS[CURRENT_MASCOT_INDEX];
+
+            LoadConfigChar();
+            LoadSpritesSheet();
+
+            IS_INTRO = true;
+            CURRENT_INTRO_FRAME = 0;
+            CURRENT_DANCE_FRAME = 0;
+
+            SpriteLabel.Content = $"Mascot: {START_CHAR}";
+        }     
+        private void SwitchToRandomCharacter()
+        {
+            if (MASCOTS == null || MASCOTS.Count == 0)
+            {
+                return;
+            }
+
+            var rand = new Random();
+            string randomChar = MASCOTS[rand.Next(MASCOTS.Count)];
+
+            START_CHAR = randomChar;
+            LoadConfigChar();
+
+            INTRO_SHEET = LoadSprite(randomChar, "intro.png");
+            DANCE_SHEET = LoadSprite(randomChar, "dance.png");
+
+            CURRENT_INTRO_FRAME = 0;
+            CURRENT_DANCE_FRAME = 0;
+            IS_INTRO = true;
+
+            JukeBoxSprite.Source = null;
+        }
+
+
+
         private void LoadMasterConfig()
         {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Config.txt");
+            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.txt");
             if (!File.Exists(path))
             {
-                System.Windows.MessageBox.Show(
-                   "Where the Fuu is the config file!?",
-                   "No Config File",
-                   MessageBoxButton.OK,
-                   MessageBoxImage.Error
-               );
+                FatalError("Cannot find the config file for the main directory", "Missing Config File");
             }
 
             foreach (var line in File.ReadAllLines(path))
@@ -447,7 +474,6 @@ namespace Jukebox_Mascot
                 string key = parts[0].Trim();
                 string value = parts[1].Trim();
 
-
                 switch (key.ToUpper())
                 {
                     case "START_CHAR": START_CHAR = value; break;
@@ -455,49 +481,24 @@ namespace Jukebox_Mascot
                         if (bool.TryParse(value, out bool boolValue))
                             ALLOW_RANDOM_MASCOT = boolValue;
                         break;
+                    case "ALLOW_MUSIC_NOTES":
+                        if (bool.TryParse(value, out bool boolValue2))
+                            ALLOW_MUSIC_NOTES = boolValue2;
+                        break;
+                    case "SPRITE_SPEED":
+                        if(int.TryParse(value, out int intValue))
+                            FRAME_RATE = intValue;
+                        break;
                 }
             }
         }
-        private void SwitchToRandomCharacter()
-        {
-            if (CHARACTER_FOLDERS == null || CHARACTER_FOLDERS.Count == 0)
-            {
-                System.Windows.MessageBox.Show(
-                    "No character folders found in SpriteSheet!",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
-                return;
-            }
-
-            var rand = new Random();
-            string randomChar = CHARACTER_FOLDERS[rand.Next(CHARACTER_FOLDERS.Count)];
-
-            START_CHAR = randomChar; 
-            LoadConfigChar();
-
-            INTRO_SHEET = LoadSprite(randomChar, "intro.png");
-            DANCE_SHEET = LoadSprite(randomChar, "dance.png");
-
-            CURRENT_INTRO_FRAME = 0;
-            CURRENT_DANCE_FRAME = 0;
-            IS_INTRO = true;
-
-            JukeBoxSprite.Source = null;
-        }
-
         private void LoadConfigChar()
         {
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"SpriteSheet","Characters", START_CHAR, "config.txt");
             if (!File.Exists(path))
             {
-                System.Windows.MessageBox.Show(
-                   "Where the Fuu is the config file!?",
-                   "No Config File",
-                   MessageBoxButton.OK,
-                   MessageBoxImage.Error
-               );
+                FatalError("Cannot find character name from config/folder. Please check config file if filename matches"
+                    , "Missing Character File");
             }
 
             foreach (var line in File.ReadAllLines(path))
@@ -517,7 +518,6 @@ namespace Jukebox_Mascot
 
                 switch (key.ToUpper())
                 {
-                    case "FRAME_WIDTH": FRAME_WIDTH = intValue; break;
                     case "FRAME_HEIGHT": FRAME_HEIGHT = intValue; break;
                     case "FRAME_RATE": FRAME_RATE = intValue; break;
                     case "INTRO_FRAME_COUNT": INTRO_FRAME_COUNT = intValue; break;
