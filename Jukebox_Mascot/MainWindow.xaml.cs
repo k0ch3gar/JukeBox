@@ -553,6 +553,7 @@ namespace Jukebox_Mascot
                 switch (key.ToUpper())
                 {
                     case "FRAME_HEIGHT": FRAME_HEIGHT = intValue; break;
+                    case "FRAME_WIDTH": FRAME_WIDTH = intValue; break;
                     case "FRAME_RATE": FRAME_RATE = intValue; break;
                     case "INTRO_FRAME_COUNT": INTRO_FRAME_COUNT = intValue; break;
                     case "DANCE_FRAME_COUNT": DANCE_FRAME_COUNT = intValue; break;
